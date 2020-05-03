@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="currency_array">
+        <item>$</item>
+        <item>€</item>
+        <item>RUB</item>
+        <item>AR$</item>
+        <item>OTRO</item>
+    </string-array>
+</resources>
