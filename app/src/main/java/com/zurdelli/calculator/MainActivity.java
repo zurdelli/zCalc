@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void currencyExchange(){
         // Multiplica el texto de textView1 * el valor asignado anteriormente
-        if (textView1.getText() == ""){
+        if (textView1.getText().length() == 0){
             currencyView.setText(null);
         } else {
             currencyView.setText((cutDecimal(Double.parseDouble((String) textView1.getText().toString()) * Double.parseDouble(sCurrency))));
