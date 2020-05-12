@@ -609,7 +609,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 parentesis = true;
-                onNumberButtonClicked("(");
+                String a = textLine.getText().toString();
+                char c = a.charAt(a.length() - 1);
+                if (lastCharIsOp(c)) {
+                    onNumberButtonClicked("(");
+                } else {
+                    onNumberButtonClicked("*(");
+                }
+
                 return true;
             }
         });

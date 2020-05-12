@@ -78,6 +78,7 @@
         android:textSize="35sp"
         android:typeface="normal"
         app:autoSizeTextType="uniform"
+        android:inputType="textFilter"
         />
 
     <TextView
