@@ -2,8 +2,7 @@ package com.zurdelli.calculator;
 
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,17 +18,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    LinearLayout button0, button1, button2, button3, button4, button5, button6, button7, button8, button9, buttonAdd, buttonSubstract, buttonMul, buttonDiv, buttonDel;
-    LinearLayout buttonEqual, buttonPercent, buttonDot, buttonAns, buttonPow;
+    LinearLayout button0, button1, button2, button3, button4, button5, button6, button7, button8, button9, buttonAdd, buttonSubstract,
+            buttonMul, buttonDiv, buttonDel, buttonEqual, buttonPercent, buttonDot, buttonAns, buttonPow;
     Button buttonM1, buttonM2, buttonM3, buttonM4;
     String result, tmp, operator, numMemory, ans, sCurrency;
     TextView textView1, currencyView, coinView;
     EditText textLine;
     Spinner spinner;
     Boolean currencyFlag = false, parentesis = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    if (sCurrency == null){
+                    if (sCurrency == null) {
                         Toast.makeText(MainActivity.this, "Mantener presionado para configurar", Toast.LENGTH_SHORT).show();
                         switchAB.setChecked(false);
                     } else {
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         switchAB.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                layoutInflador();
+                layoutInflator();
                 sCurrency = "1";
                 switchAB.setChecked(true);
                 return true;
@@ -87,14 +88,19 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
     // Este metodo es para crear el menu contextual cuando se mantiene pulsada la tecla de currency
-    private void layoutInflador(){
+    private void layoutInflator() {
         LayoutInflater inflater = this.getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog_switch_currency,null);
+        final View view = inflater.inflate(R.layout.dialog_switch_currency, null);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         final EditText currency = view.findViewById(R.id.changeValue);
         final Spinner spinner = view.findViewById(R.id.currency_spinner);
+
+
+        String endpoint = "http://data.fixer.io/api/latest?access_key=88304b593fbd3b7065d8320eda0c4128";
+
 
         // Creamos un ArrayAdapter usando el array hecho en values/stringsArray y el layout spinner
         // que viene por defecto
@@ -120,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean lastCharIsOp (char c){
+    private boolean charIsOp(char c) {
         return c == '+' || c == '^' || c == '*' || c == '/' || c == '%' || c == '-' || c == '.' || c == '√';
     }
 
-    public void showText(){
+    public void showText() {
         String a = textLine.getText().toString();
         char c = a.charAt(a.length() - 1);
-        if (!lastCharIsOp(c)) {
+        if (!charIsOp(c)) {
             double res = eval(a);
             textView1.setText(cutDecimal(res));
             if (currencyFlag)
@@ -136,49 +142,49 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onDelButtonClicked (){
-        if(textLine.getText().length() > 0 ){
+    private void onDelButtonClicked() {
+        if (textLine.getText().length() > 0) {
 
-            CharSequence textSelec = textLine.getText().subSequence(textLine.getSelectionStart(),textLine.getSelectionEnd());
-            if (textSelec.length()>0){
-                textLine.getText().replace(textLine.getSelectionStart(),textLine.getSelectionEnd(),"");
-            } else if (textLine.getSelectionStart()>0) {
-                textLine.getText().delete(textLine.getSelectionStart()-1, textLine.getSelectionStart());
+            CharSequence textSelec = textLine.getText().subSequence(textLine.getSelectionStart(), textLine.getSelectionEnd());
+            if (textSelec.length() > 0) {
+                textLine.getText().replace(textLine.getSelectionStart(), textLine.getSelectionEnd(), "");
+            } else if (textLine.getSelectionStart() > 0) {
+                textLine.getText().delete(textLine.getSelectionStart() - 1, textLine.getSelectionStart());
             }
             if (textLine.getText().length() > 1) {
                 showText();
-            } else{
+            } else {
                 textView1.setText("");
             }
         }
     }
 
     private void onNumberButtonClicked(String num) {
-        if(textLine.getText().length() == 0){
-            textView1.setTextColor(Color.rgb(80,80,80));
+        if (textLine.getText().length() == 0) {
+            textView1.setTextColor(Color.rgb(80, 80, 80));
         }
         textLine.getText().replace(textLine.getSelectionStart(), textLine.getSelectionEnd(), num);
         if (!parentesis)
-          showText();
+            showText();
     }
 
     private void onOperatorButtonClicked(String operator) {
         tmp = textLine.getText().toString();
-        if (tmp.length()>0) {
-            char c = tmp.charAt(tmp.length()-1);
+        if (tmp.length() > 0) {
+            char c = tmp.charAt(tmp.length() - 1);
             // Si antes se habia pulsado un operador, lo reemplaza
-            if (lastCharIsOp(c))
+            if (charIsOp(c))
                 onDelButtonClicked();
-            textLine.getText().insert(textLine.getSelectionStart(),operator);
+            textLine.getText().insert(textLine.getSelectionStart(), operator);
             tmp = textLine.getText().toString();
             this.operator = operator;
-        } else if (textView1.getText().length() > 0){
+        } else if (textView1.getText().length() > 0) {
             textLine.setText(textView1.getText() + operator);
             textLine.setSelection(textLine.getText().length());
-        } else if (operator.equals("-") || operator.equals("√")){
-           tmp = textLine.getText().toString();
-           textLine.getText().insert(textLine.getSelectionStart(),operator);
-           this.operator = operator;
+        } else if (operator.equals("-") || operator.equals("√")) {
+            tmp = textLine.getText().toString();
+            textLine.getText().insert(textLine.getSelectionStart(), operator);
+            this.operator = operator;
         }
     }
 
@@ -189,14 +195,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // funcion para cortar parte decimal de un numero
-    public String cutDecimal(double num){
+    public String cutDecimal(double num) {
         String s = "";
         // Si el resultado no tiene parte decimal se muestra solo la parte entera (long) res
         if (num - (long) num == 0) {
             s = String.valueOf((long) num);
         } else {
             //result = String.valueOf(res);
-            s = String.valueOf((double)Math.round(num * 100000d) / 100000d);
+            s = String.valueOf((double) Math.round(num * 100000d) / 100000d);
         }
         return s;
     }
@@ -226,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             double parse() {
                 nextChar();
                 double x = parseExpression();
-                if (pos < str.length()) throw new RuntimeException("Unexpected: " + (char)ch);
+                if (pos < str.length()) throw new RuntimeException("Unexpected: " + (char) ch);
                 return x;
             }
 
@@ -238,8 +244,8 @@ public class MainActivity extends AppCompatActivity {
 
             double parseExpression() {
                 double x = parseTerm();
-                for (;;) {
-                    if      (eat('+')) x += parseTerm(); // addition
+                for (; ; ) {
+                    if (eat('+')) x += parseTerm(); // addition
                     else if (eat('-')) x -= parseTerm(); // subtraction
                     else return x;
                 }
@@ -247,8 +253,8 @@ public class MainActivity extends AppCompatActivity {
 
             double parseTerm() {
                 double x = parseFactor();
-                for (;;) {
-                    if      (eat('*')) x *= parseFactor(); // multiplication
+                for (; ; ) {
+                    if (eat('*')) x *= parseFactor(); // multiplication
                     else if (eat('/')) x /= parseFactor(); // division
                     else return x;
                 }
@@ -287,27 +293,27 @@ public class MainActivity extends AppCompatActivity {
                             throw new RuntimeException("Unknown function: " + func);
                     }
                 } else {
-                    throw new RuntimeException("Unexpected: " + (char)ch);
+                    throw new RuntimeException("Unexpected: " + (char) ch);
                 }
 
                 if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
-                if (eat('%')) x = x * (parseFactor()/100);
+                if (eat('%')) x = x * (parseFactor() / 100);
 
                 return x;
             }
         }.parse();
     }
 
-    private void currencyExchange(){
+    private void currencyExchange() {
         // Multiplica el texto de textView1 * el valor asignado anteriormente
-        if (textView1.getText().length() == 0){
+        if (textView1.getText().length() == 0) {
             currencyView.setText(null);
         } else {
             currencyView.setText((cutDecimal(Double.parseDouble((String) textView1.getText().toString()) * Double.parseDouble(sCurrency))));
         }
     }
 
-    public void memoryClick (String m) {
+    public void memoryClick(String m) {
         // Si el textView1 esta vacio busca en textLine
         if (textView1.getText().length() == 0) {
             if (textLine.getText().length() > 0) {
@@ -320,19 +326,19 @@ public class MainActivity extends AppCompatActivity {
             // la variable numMemory pasa a valer textView1
             numMemory = (textView1.getText().toString());
         }
-        if (numMemory.length()>0){
+        if (numMemory.length() > 0) {
             switch (m.substring(0, 2)) {
                 case "M1":
-                    buttonM1.setText("M1\n"+numMemory);
+                    buttonM1.setText("M1\n" + numMemory);
                     break;
                 case "M2":
-                    buttonM2.setText("M2\n"+numMemory);
+                    buttonM2.setText("M2\n" + numMemory);
                     break;
                 case "M3":
-                    buttonM3.setText("M3\n"+numMemory);
+                    buttonM3.setText("M3\n" + numMemory);
                     break;
                 case "M4":
-                    buttonM4.setText("M4\n"+numMemory);
+                    buttonM4.setText("M4\n" + numMemory);
                     break;
             }
         } else {
@@ -357,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initControl() {
-        button0 =  findViewById(R.id.button0);
+        button0 = findViewById(R.id.button0);
         button1 = findViewById(R.id.button1);
         button2 = findViewById(R.id.button2);
         button3 = findViewById(R.id.button3);
@@ -368,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
         button8 = findViewById(R.id.button8);
         button9 = findViewById(R.id.button9);
 
-        buttonPercent =  findViewById(R.id.buttonPercent);
+        buttonPercent = findViewById(R.id.buttonPercent);
         buttonDot = findViewById(R.id.buttonDot);
         buttonAns = findViewById(R.id.buttonAns);
         buttonPow = findViewById(R.id.buttonPow);
@@ -386,10 +392,10 @@ public class MainActivity extends AppCompatActivity {
         textLine = findViewById(R.id.textLine);
         coinView = findViewById(R.id.moneda);
 
-        buttonM1 =findViewById(R.id.buttonM1);
-        buttonM2 =findViewById(R.id.buttonM2);
-        buttonM3 =findViewById(R.id.buttonM3);
-        buttonM4 =findViewById(R.id.buttonM4);
+        buttonM1 = findViewById(R.id.buttonM1);
+        buttonM2 = findViewById(R.id.buttonM2);
+        buttonM3 = findViewById(R.id.buttonM3);
+        buttonM4 = findViewById(R.id.buttonM4);
 
         spinner = findViewById(R.id.currency_spinner);
     }
@@ -471,7 +477,8 @@ public class MainActivity extends AppCompatActivity {
         });
         buttonSubstract.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){ onOperatorButtonClicked("-");
+            public void onClick(View v) {
+                onOperatorButtonClicked("-");
             }
         });
         buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -508,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
         buttonM1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (buttonM1.getText().toString().length()>2)
+                if (buttonM1.getText().toString().length() > 2)
                     onNumberButtonClicked(buttonM1.getText().toString().substring(3));
             }
         });
@@ -524,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
         buttonM2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (buttonM2.getText().toString().length()>2)
+                if (buttonM2.getText().toString().length() > 2)
                     onNumberButtonClicked(buttonM2.getText().toString().substring(3));
             }
         });
@@ -540,7 +547,7 @@ public class MainActivity extends AppCompatActivity {
         buttonM3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (buttonM3.getText().toString().length()>2)
+                if (buttonM3.getText().toString().length() > 2)
                     onNumberButtonClicked(buttonM3.getText().toString().substring(3));
             }
         });
@@ -556,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
         buttonM4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (buttonM4.getText().toString().length()>2)
+                if (buttonM4.getText().toString().length() > 2)
                     onNumberButtonClicked(buttonM4.getText().toString().substring(3));
             }
         });
@@ -573,10 +580,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                textLine.getText().toString().replace("√", "sqrt");
-                if(textLine.getText().length()>0){
+                if (textLine.getText().length() > 0) {
                     showText();
                     textLine.setText("");
-                    textView1.setTextColor(Color.rgb(0,0,0));
+                    textView1.setTextColor(Color.rgb(0, 0, 0));
                 }
             }
         });
@@ -584,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
         buttonDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(textLine.getText().toString().length()>0)
+                if (textLine.getText().toString().length() > 0)
                     onDelButtonClicked();
             }
         });
@@ -611,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 parentesis = true;
                 String a = textLine.getText().toString();
                 char c = a.charAt(a.length() - 1);
-                if (lastCharIsOp(c)) {
+                if (charIsOp(c)) {
                     onNumberButtonClicked("(");
                 } else {
                     onNumberButtonClicked("*(");
@@ -624,8 +631,13 @@ public class MainActivity extends AppCompatActivity {
         button9.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                parentesis = false;
-                onNumberButtonClicked(")");
+                String a = textLine.getText().toString();
+                char c = a.charAt(a.length() - 1);
+                if (parentesis && c!='(') {
+                    parentesis = false;
+                    onNumberButtonClicked(")");
+                }
+
                 return true;
             }
         });
@@ -644,7 +656,7 @@ public class MainActivity extends AppCompatActivity {
         // Para mostrar el cursor solo si se pulsa sobre el edittext
         if (textLine.requestFocus()) {
             textLine.setCursorVisible(true);
-        } else{
+        } else {
             textLine.setCursorVisible(false);
         }
     }
